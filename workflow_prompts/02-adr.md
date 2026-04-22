@@ -1,0 +1,2 @@
+# Prompt: Architectural Decision Record (ADR)
+Document a critical architectural decision using the MADR template. Explain the context, options considered, and the final justification based on quality attribute trade-offs.
