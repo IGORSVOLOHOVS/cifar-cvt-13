@@ -37,7 +37,17 @@ def run_inference(image_path: str, model_name: str = "microsoft/cvt-13") -> None
     
     # CIFAR-10 Classes
     classes = ['airplane', 'automobile', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck']
-    predicted_label = classes[predicted_class_idx]
+
+    # The default model is microsoft/cvt-13, which is trained on ImageNet-1k and
+    # returns indices up to 999 - indexing the 10-entry list above with one of
+    # those raises IndexError. Take the label from the checkpoint itself, and
+    # only fall back to the CIFAR-10 names when the checkpoint is a 10-class
+    # fine-tune that never got proper id2label entries.
+    id2label = getattr(model.config, "id2label", None) or {}
+    label = id2label.get(predicted_class_idx)
+    if label is None or (len(id2label) == len(classes) and str(label).startswith("LABEL_")):
+        label = classes[predicted_class_idx] if predicted_class_idx < len(classes) else str(predicted_class_idx)
+    predicted_label = label
 
     # 4. Results
     console.print(Panel(
