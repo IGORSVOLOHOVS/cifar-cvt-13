@@ -116,7 +116,7 @@ class CvtTrainer:
             return Result[
                 tuple[DataLoader[Any], DataLoader[Any], DataLoader[Any], list[str]], str
             ].ok(loaders)
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001 - boundary handler: the error is reported, not swallowed
             return Result[
                 tuple[DataLoader[Any], DataLoader[Any], DataLoader[Any], list[str]], str
             ].fail(f"Failed to load data: {e}")
@@ -129,7 +129,7 @@ class CvtTrainer:
             model.classifier = nn.Linear(model.classifier.in_features, num_classes)  # type: ignore
             model.to(self.device)  # type: ignore
             return Result[nn.Module, str].ok(model)
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001 - boundary handler: the error is reported, not swallowed
             return Result[nn.Module, str].fail(f"Failed to initialize model: {e}")
 
     def train_epoch(self, model: nn.Module, loader: DataLoader[Any]) -> float:
@@ -193,7 +193,7 @@ def main() -> None:
     if not data_res.is_ok():
         logger.error(data_res.error)
         return
-    train_loader, val_loader, test_loader, classes = data_res.unwrap()
+    train_loader, _val_loader, test_loader, classes = data_res.unwrap()
 
     # Model Path
     model_res = trainer.initialize_model(len(classes))
