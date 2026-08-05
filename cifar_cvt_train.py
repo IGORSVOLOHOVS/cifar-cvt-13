@@ -6,25 +6,27 @@ Includes monadic error handling, structured logging, and Python 3.12+ modernizat
 import logging
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Generic, TypeVar, cast, Union
+from typing import Any, Generic, TypeVar, cast
 
 import torch
-import torch.nn as nn
 from rich.console import Console
 from rich.logging import RichHandler
-from rich.progress import Progress, SpinnerColumn, TextColumn, BarColumn, TimeElapsedColumn
-from sklearn.metrics import classification_report, accuracy_score # type: ignore
+from rich.progress import BarColumn, Progress, SpinnerColumn, TextColumn, TimeElapsedColumn
+from sklearn.metrics import accuracy_score, classification_report  # type: ignore
+from torch import nn
 from torch.utils.data import DataLoader, random_split
-from torchvision import datasets # type: ignore
+from torchvision import datasets  # type: ignore
 from transformers import AutoImageProcessor, CvtForImageClassification
 
 # --- Monadic Error Handling ---
 T = TypeVar("T")
 E = TypeVar("E")
 
+
 @dataclass(frozen=True)
 class Result(Generic[T, E]):
     """Generic Result type for monadic error handling."""
+
     value: T | None = None
     error: E | None = None
 
@@ -44,10 +46,12 @@ class Result(Generic[T, E]):
             raise ValueError(f"Called unwrap on Failure: {self.error}")
         return cast(T, self.value)
 
+
 # --- Configuration ---
 @dataclass(frozen=True)
 class ModelConfig:
     """Configuration for CvT Model training."""
+
     model_name: str = "microsoft/cvt-13"
     data_dir: Path = field(default_factory=lambda: Path("./data"))
     batch_size: int = 64
@@ -55,15 +59,17 @@ class ModelConfig:
     val_size: int = 5000
     lr: float = 5e-5
 
+
 # --- Logging Setup ---
 console = Console()
 logging.basicConfig(
     level="INFO",
     format="%(message)s",
     datefmt="[%X]",
-    handlers=[RichHandler(console=console, rich_tracebacks=True)]
+    handlers=[RichHandler(console=console, rich_tracebacks=True)],
 )
 logger = logging.getLogger("cifar-cvt")
+
 
 # --- Core Logic ---
 class CvtTrainer:
@@ -72,15 +78,17 @@ class CvtTrainer:
     def __init__(self, config: ModelConfig) -> None:
         self.config = config
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        self.image_processor = AutoImageProcessor.from_pretrained(config.model_name) # type: ignore
+        self.image_processor = AutoImageProcessor.from_pretrained(config.model_name)  # type: ignore
         logger.info(f"Initialized CvtTrainer on [bold cyan]{self.device}[/bold cyan]")
 
     def transform(self, image: Any) -> torch.Tensor:
         """Apply CvT-specific transformations."""
         inputs = self.image_processor(images=image, return_tensors="pt")
-        return inputs["pixel_values"].squeeze(0) # type: ignore
+        return inputs["pixel_values"].squeeze(0)  # type: ignore
 
-    def prepare_data(self) -> Result[tuple[DataLoader[Any], DataLoader[Any], DataLoader[Any], list[str]], str]:
+    def prepare_data(
+        self,
+    ) -> Result[tuple[DataLoader[Any], DataLoader[Any], DataLoader[Any], list[str]], str]:
         """Load and split CIFAR-10 data."""
         try:
             logger.info("Loading CIFAR-10 dataset...")
@@ -92,26 +100,34 @@ class CvtTrainer:
             )
 
             train_size = len(full_train) - self.config.val_size
-            train_dataset, val_dataset = random_split(full_train, [train_size, self.config.val_size])
+            train_dataset, val_dataset = random_split(
+                full_train, [train_size, self.config.val_size]
+            )
 
             loaders: tuple[DataLoader[Any], DataLoader[Any], DataLoader[Any], list[str]] = (
                 DataLoader(train_dataset, batch_size=self.config.batch_size, shuffle=True),
                 DataLoader(val_dataset, batch_size=self.config.batch_size, shuffle=False),
                 DataLoader(test_dataset, batch_size=self.config.batch_size, shuffle=False),
-                list(full_train.classes)
+                list(full_train.classes),
             )
-            logger.info(f"Data ready: {train_size} train, {self.config.val_size} val, {len(test_dataset)} test.")
-            return Result[tuple[DataLoader[Any], DataLoader[Any], DataLoader[Any], list[str]], str].ok(loaders)
+            logger.info(
+                f"Data ready: {train_size} train, {self.config.val_size} val, {len(test_dataset)} test."
+            )
+            return Result[
+                tuple[DataLoader[Any], DataLoader[Any], DataLoader[Any], list[str]], str
+            ].ok(loaders)
         except Exception as e:
-            return Result[tuple[DataLoader[Any], DataLoader[Any], DataLoader[Any], list[str]], str].fail(f"Failed to load data: {e}")
+            return Result[
+                tuple[DataLoader[Any], DataLoader[Any], DataLoader[Any], list[str]], str
+            ].fail(f"Failed to load data: {e}")
 
     def initialize_model(self, num_classes: int) -> Result[nn.Module, str]:
         """Load and prepare CvtForImageClassification."""
         try:
             logger.info(f"Loading model {self.config.model_name}...")
             model = CvtForImageClassification.from_pretrained(self.config.model_name)
-            model.classifier = nn.Linear(model.classifier.in_features, num_classes) # type: ignore
-            model.to(self.device) # type: ignore
+            model.classifier = nn.Linear(model.classifier.in_features, num_classes)  # type: ignore
+            model.to(self.device)  # type: ignore
             return Result[nn.Module, str].ok(model)
         except Exception as e:
             return Result[nn.Module, str].fail(f"Failed to initialize model: {e}")
@@ -129,19 +145,19 @@ class CvtTrainer:
             BarColumn(),
             TextColumn("[progress.percentage]{task.percentage:>3.0f}%"),
             TimeElapsedColumn(),
-            console=console
+            console=console,
         ) as progress:
             task = progress.add_task("Training...", total=len(loader))
-            
+
             for images, labels in loader:
                 images, labels = images.to(self.device), labels.to(self.device)
-                
+
                 optimizer.zero_grad()
                 outputs = model(images)
                 loss = criterion(outputs.logits, labels)
                 loss.backward()
                 optimizer.step()
-                
+
                 total_loss += loss.item()
                 progress.update(task, advance=1, description=f"Loss: {loss.item():.4f}")
 
@@ -166,6 +182,7 @@ class CvtTrainer:
         console.print(classification_report(all_true, all_preds, target_names=classes))
         return float(accuracy)
 
+
 def main() -> None:
     """Imperative shell for the training pipeline."""
     config = ModelConfig()
@@ -184,16 +201,18 @@ def main() -> None:
         logger.error(model_res.error)
         return
     model = model_res.unwrap()
-    
+
     # Architecture Visualization
     logger.info("Model Architecture Overview:")
     console.print(model)
 
     # Training Path
     for epoch in range(config.num_epochs):
-        logger.info(f"Starting Epoch {epoch+1}/{config.num_epochs}")
+        logger.info(f"Starting Epoch {epoch + 1}/{config.num_epochs}")
         avg_loss = trainer.train_epoch(model, train_loader)
-        logger.info(f"Epoch {epoch+1} complete. Average Loss: [bold red]{avg_loss:.4f}[/bold red]")
+        logger.info(
+            f"Epoch {epoch + 1} complete. Average Loss: [bold red]{avg_loss:.4f}[/bold red]"
+        )
 
     # Eval Path
     final_acc = trainer.evaluate(model, test_loader, classes)
@@ -209,6 +228,7 @@ def main() -> None:
         logger.info(f"Model saved to [bold cyan]{model_file}[/bold cyan]")
     else:
         logger.warning("Accuracy is below target (65%). Consider more epochs.")
+
 
 if __name__ == "__main__":
     main()

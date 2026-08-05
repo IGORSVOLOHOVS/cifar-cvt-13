@@ -2,22 +2,24 @@
 Inference script for CvT-13 model fine-tuned on CIFAR-10.
 """
 
+import logging
+
 import torch
 from PIL import Image
-from transformers import AutoImageProcessor, CvtForImageClassification
-import logging
 from rich.console import Console
 from rich.panel import Panel
+from transformers import AutoImageProcessor, CvtForImageClassification
 
 # Setup
 console = Console()
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("inference")
 
+
 def run_inference(image_path: str, model_name: str = "microsoft/cvt-13") -> None:
     """Run inference on a single image."""
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    
+
     # 1. Load Model and Processor
     logger.info(f"Loading model {model_name}...")
     processor = AutoImageProcessor.from_pretrained(model_name)
@@ -34,9 +36,20 @@ def run_inference(image_path: str, model_name: str = "microsoft/cvt-13") -> None
         outputs = model(**inputs)
         logits = outputs.logits
         predicted_class_idx = logits.argmax(-1).item()
-    
+
     # CIFAR-10 Classes
-    classes = ['airplane', 'automobile', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck']
+    classes = [
+        "airplane",
+        "automobile",
+        "bird",
+        "cat",
+        "deer",
+        "dog",
+        "frog",
+        "horse",
+        "ship",
+        "truck",
+    ]
 
     # The default model is microsoft/cvt-13, which is trained on ImageNet-1k and
     # returns indices up to 999 - indexing the 10-entry list above with one of
@@ -46,18 +59,26 @@ def run_inference(image_path: str, model_name: str = "microsoft/cvt-13") -> None
     id2label = getattr(model.config, "id2label", None) or {}
     label = id2label.get(predicted_class_idx)
     if label is None or (len(id2label) == len(classes) and str(label).startswith("LABEL_")):
-        label = classes[predicted_class_idx] if predicted_class_idx < len(classes) else str(predicted_class_idx)
+        label = (
+            classes[predicted_class_idx]
+            if predicted_class_idx < len(classes)
+            else str(predicted_class_idx)
+        )
     predicted_label = label
 
     # 4. Results
-    console.print(Panel(
-        f"[bold green]Prediction:[/bold green] {predicted_label}\n"
-        f"[bold blue]Class Index:[/bold blue] {predicted_class_idx}",
-        title="Inference Result",
-        expand=False
-    ))
+    console.print(
+        Panel(
+            f"[bold green]Prediction:[/bold green] {predicted_label}\n"
+            f"[bold blue]Class Index:[/bold blue] {predicted_class_idx}",
+            title="Inference Result",
+            expand=False,
+        )
+    )
+
 
 import argparse
+
 
 def main() -> None:
     """Entry point for inference CLI."""
@@ -67,6 +88,7 @@ def main() -> None:
     args = parser.parse_args()
 
     run_inference(args.image, args.model)
+
 
 if __name__ == "__main__":
     main()
