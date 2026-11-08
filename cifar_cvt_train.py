@@ -6,7 +6,7 @@ Includes monadic error handling, structured logging, and Python 3.12+ modernizat
 import logging
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Generic, TypeVar, cast
+from typing import Any, cast
 
 import torch
 from rich.console import Console
@@ -18,13 +18,10 @@ from torch.utils.data import DataLoader, random_split
 from torchvision import datasets  # type: ignore
 from transformers import AutoImageProcessor, CvtForImageClassification
 
+
 # --- Monadic Error Handling ---
-T = TypeVar("T")
-E = TypeVar("E")
-
-
 @dataclass(frozen=True)
-class Result(Generic[T, E]):
+class Result[T, E]:
     """Generic Result type for monadic error handling."""
 
     value: T | None = None
@@ -111,7 +108,8 @@ class CvtTrainer:
                 list(full_train.classes),
             )
             logger.info(
-                f"Data ready: {train_size} train, {self.config.val_size} val, {len(test_dataset)} test."
+                f"Data ready: {train_size} train, {self.config.val_size} val, "
+                f"{len(test_dataset)} test."
             )
             return Result[
                 tuple[DataLoader[Any], DataLoader[Any], DataLoader[Any], list[str]], str
