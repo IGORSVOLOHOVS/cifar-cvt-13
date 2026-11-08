@@ -2,6 +2,7 @@
 Inference script for CvT-13 model fine-tuned on CIFAR-10.
 """
 
+import argparse
 import logging
 
 import torch
@@ -22,10 +23,10 @@ def run_inference(image_path: str, model_name: str = "microsoft/cvt-13") -> None
 
     # 1. Load Model and Processor
     logger.info(f"Loading model {model_name}...")
-    processor = AutoImageProcessor.from_pretrained(model_name)
+    processor = AutoImageProcessor.from_pretrained(model_name)  # type: ignore[no-untyped-call]
     model = CvtForImageClassification.from_pretrained(model_name)
-    model.to(device)
-    model.eval()
+    model.to(device)  # type: ignore[arg-type]
+    model.eval()  # type: ignore[no-untyped-call]
 
     # 2. Load and Preprocess Image
     image = Image.open(image_path).convert("RGB")
@@ -75,9 +76,6 @@ def run_inference(image_path: str, model_name: str = "microsoft/cvt-13") -> None
             expand=False,
         )
     )
-
-
-import argparse
 
 
 def main() -> None:
