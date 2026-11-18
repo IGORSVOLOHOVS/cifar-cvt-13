@@ -4,6 +4,27 @@ Reverse-engineered on 2026-11-18 from commit `a8b0dd1` (tag `v1.0.0`). Every
 requirement describes behaviour present in the code at that commit; sources are
 `path:line`. Documentation hub: [`docs/README.md`](docs/README.md).
 
+<!-- jira-sync:start -->
+Jira: KAN-83
+
+## Tasks
+
+This list is one ticket in Jira project KAN, [KAN-83](https://igorsvolohovs.atlassian.net/browse/KAN-83). Each line is a checkbox there: tick it in Jira and the sync ticks it here; add a checkbox there and it is appended here. Done items are the features described in section 3; open items are what the project declares but the code does not do yet.
+
+- [x] Result type and configuration (section 3.1) <!-- spec-result-type-and-configuration -->
+- [x] Training data (section 3.2) <!-- spec-training-data -->
+- [x] Model, training and evaluation (section 3.3) <!-- spec-model-training-and-evaluation -->
+- [x] Training pipeline (section 3.4) <!-- spec-training-pipeline -->
+- [x] Inference (section 3.5) <!-- spec-inference -->
+- [x] Repository tooling (section 3.6) <!-- spec-repository-tooling -->
+- [ ] "structured logging" (declared, not implemented) <!-- spec-structured-logging -->
+- [ ] "Inference script for CvT-13 model fine-tuned on CIFAR-10" (declared, not implemented) <!-- spec-inference-script-for-cvt-13-model-fine-tuned-on-ci -->
+- [ ] `data/` and `models/` are gitignored (declared, not implemented) <!-- spec-data-and-models-are-gitignored -->
+- [ ] A validation split (declared, not implemented) <!-- spec-a-validation-split -->
+- [ ] A multi-stage Dockerfile, performance baselines and similar steps (declared, not implemented) <!-- spec-a-multi-stage-dockerfile-performance-baselines-and -->
+
+<!-- jira-sync:end -->
+
 ## 1. Purpose and scope
 
 The system fine-tunes the pretrained CvT-13 classifier (`microsoft/cvt-13`) on
