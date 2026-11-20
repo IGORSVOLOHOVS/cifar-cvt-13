@@ -202,3 +202,93 @@ No manual test is recorded: `tests/manual/tests.json` is empty.
    scripts, the tests or the README.
 10. Whether a fixed random seed for the split is intended; the removed brief's
     example passes none either.
+
+## Screenshots of requirements
+
+### FR-1 - The system shall provide a frozen Result[T, E] with ok, fail, isok and unwrap, where unwrap on a failure raise…
+
+> Screenshot skipped: the code does not run here - the project runs on PyTorch-class libraries and trained weights, and torch is not installed here (multi-gigabyte); requirements whose code does not need torch will be revisited in a later pass.
+
+### FR-2 - The system shall default training to model microsoft/cvt-13, data directory ./data, batch size 64, 1 epoch, 50…
+
+> Screenshot skipped: the code does not run here - the project runs on PyTorch-class libraries and trained weights, and torch is not installed here (multi-gigabyte); requirements whose code does not need torch will be revisited in a later pass.
+
+### FR-3 - The system shall run on CUDA when available and on the CPU otherwise. Source: cifarcvttrain.py:77, inference.p…
+
+> Screenshot skipped: the code does not run here - the project runs on PyTorch-class libraries and trained weights, and torch is not installed here (multi-gigabyte); requirements whose code does not need torch will be revisited in a later pass.
+
+### FR-4 - The system shall load the image processor of modelname when the trainer is created and turn each image into th…
+
+> Screenshot skipped: the code does not run here - the project runs on PyTorch-class libraries and trained weights, and torch is not installed here (multi-gigabyte); requirements whose code does not need torch will be revisited in a later pass.
+
+### FR-5 - The system shall load the CIFAR-10 training and test sets into datadir with download enabled. Source: cifarcvt…
+
+> Screenshot skipped: the code does not run here - the project runs on PyTorch-class libraries and trained weights, and torch is not installed here (multi-gigabyte); requirements whose code does not need torch will be revisited in a later pass.
+
+### FR-6 - The system shall split the training set at random into len - valsize training and valsize validation images. S…
+
+> Screenshot skipped: the code does not run here - the project runs on PyTorch-class libraries and trained weights, and torch is not installed here (multi-gigabyte); requirements whose code does not need torch will be revisited in a later pass.
+
+### FR-7 - The system shall return training, validation and test loaders of batchsize (only the training loader shuffled)…
+
+> Screenshot skipped: the code does not run here - the project runs on PyTorch-class libraries and trained weights, and torch is not installed here (multi-gigabyte); requirements whose code does not need torch will be revisited in a later pass.
+
+### FR-8 - The system shall return a failed Result with the text Failed to load data: <reason> when loading the data rais…
+
+> Screenshot skipped: the code does not run here - the project runs on PyTorch-class libraries and trained weights, and torch is not installed here (multi-gigabyte); requirements whose code does not need torch will be revisited in a later pass.
+
+### FR-9 - The system shall load CvtForImageClassification from modelname, replace its classifier with a linear layer of …
+
+> Screenshot skipped: the code does not run here - the project runs on PyTorch-class libraries and trained weights, and torch is not installed here (multi-gigabyte); requirements whose code does not need torch will be revisited in a later pass.
+
+### FR-10 - The system shall return a failed Result with the text Failed to initialize model: <reason> when loading the mo…
+
+> Screenshot skipped: the code does not run here - the project runs on PyTorch-class libraries and trained weights, and torch is not installed here (multi-gigabyte); requirements whose code does not need torch will be revisited in a later pass.
+
+### FR-11 - The system shall train one epoch in training mode with AdamW at lr and cross-entropy on the logits, one optimi…
+
+> Screenshot skipped: the code does not run here - the project runs on PyTorch-class libraries and trained weights, and torch is not installed here (multi-gigabyte); requirements whose code does not need torch will be revisited in a later pass.
+
+### FR-12 - The system shall show a progress bar with the current batch loss while training. Source: cifarcvttrain.py:140-…
+
+> Screenshot skipped: the code does not run here - the project runs on PyTorch-class libraries and trained weights, and torch is not installed here (multi-gigabyte); requirements whose code does not need torch will be revisited in a later pass.
+
+### FR-13 - The system shall evaluate in eval mode without gradients, predict the arg-max of the logits, print scikit-lear…
+
+> Screenshot skipped: the code does not run here - the project runs on PyTorch-class libraries and trained weights, and torch is not installed here (multi-gigabyte); requirements whose code does not need torch will be revisited in a later pass.
+
+### FR-14 - The system shall, in main(), load data, then the model, print the model architecture, train for numepochs epoc…
+
+> Screenshot skipped: the code does not run here - the project runs on PyTorch-class libraries and trained weights, and torch is not installed here (multi-gigabyte); requirements whose code does not need torch will be revisited in a later pass.
+
+### FR-15 - The system shall stop after logging the error when the data fails, before loading the model, and when the mode…
+
+> Screenshot skipped: the code does not run here - the project runs on PyTorch-class libraries and trained weights, and torch is not installed here (multi-gigabyte); requirements whose code does not need torch will be revisited in a later pass.
+
+### FR-16 - The system shall save the model's statedict to models/cvtcifar10best.pth, creating models/, when the test accu…
+
+> Screenshot skipped: the code does not run here - the project runs on PyTorch-class libraries and trained weights, and torch is not installed here (multi-gigabyte); requirements whose code does not need torch will be revisited in a later pass.
+
+### FR-17 - The system shall log the warning Accuracy is below target (65%). Consider more epochs. and save nothing otherw…
+
+> Screenshot skipped: the code does not run here - the project runs on PyTorch-class libraries and trained weights, and torch is not installed here (multi-gigabyte); requirements whose code does not need torch will be revisited in a later pass.
+
+### FR-18 - The system shall accept a required --image path and an optional --model (default microsoft/cvt-13) and pass bo…
+
+> Screenshot skipped: the code does not run here - the project runs on PyTorch-class libraries and trained weights, and torch is not installed here (multi-gigabyte); requirements whose code does not need torch will be revisited in a later pass.
+
+### FR-19 - The system shall load the processor and model of the given checkpoint, convert the image to RGB, and take the …
+
+> Screenshot skipped: the code does not run here - the project runs on PyTorch-class libraries and trained weights, and torch is not installed here (multi-gigabyte); requirements whose code does not need torch will be revisited in a later pass.
+
+### FR-20 - The system shall name the predicted class from the checkpoint's id2label; when the label is missing, or the ch…
+
+> Screenshot skipped: the code does not run here - the project runs on PyTorch-class libraries and trained weights, and torch is not installed here (multi-gigabyte); requirements whose code does not need torch will be revisited in a later pass.
+
+### FR-21 - The system shall print a panel titled Inference Result with Prediction: <label> and Class Index: <index>. Sour…
+
+> Screenshot skipped: the code does not run here - the project runs on PyTorch-class libraries and trained weights, and torch is not installed here (multi-gigabyte); requirements whose code does not need torch will be revisited in a later pass.
+
+### FR-22 - The repository shall provide the recipe.ps1 verbs of repo-quality-template (lab requirements revision 4.0.0, e…
+
+> Screenshot pending: this requirement is about the repository tooling (recipe.ps1, git hooks, CI), which does run on this machine; it will be captured in a later pass.
